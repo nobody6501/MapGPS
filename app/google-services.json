@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "708716257863",
+    "firebase_url": "https://mapgps-145221.firebaseio.com",
+    "project_id": "mapgps-145221",
+    "storage_bucket": "mapgps-145221.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708716257863:android:e4b703ac4a203392",
+        "android_client_info": {
+          "package_name": "com.example.martinhuang.mapgps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708716257863-tqkq3f92khrjgdv3jh2a0lcp79k9kpqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.martinhuang.mapgps",
+            "certificate_hash": "1575BA1027AA68A0966EFEA38F6C534A4B24DCEF"
+          }
+        },
+        {
+          "client_id": "708716257863-ch1ee2gm26gt6j1l8acrq5imci352mum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4y9tnzlD6f91cXLA0ae0x69Qw_JSh9j4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708716257863-ch1ee2gm26gt6j1l8acrq5imci352mum.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
