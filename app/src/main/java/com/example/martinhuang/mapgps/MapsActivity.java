@@ -150,7 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCurrLocationMarker.remove();
         }
 
-        firebase = new Firebase("https://mapgps-145221.firebaseio.com/");
+//        firebase = new Firebase("https://mapgps-145221.firebaseio.com/");
 
         currentLat = location.getLatitude();
         currentLong = location.getLongitude();
@@ -159,7 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coordinates.put("Long", Double.toString(currentLong));
         coordinates.put("Lat", Double.toString(currentLat));
 
-        firebase.child("test").setValue(coordinates);
+//        firebase.child("test").setValue(coordinates);
 
         Log.d("TAG","firebasechild ");
 
