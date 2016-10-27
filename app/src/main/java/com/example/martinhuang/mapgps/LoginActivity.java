@@ -2,6 +2,7 @@ package com.example.martinhuang.mapgps;
 
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -28,6 +30,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     //facebook
     private LoginButton loginButton;
     private CallbackManager callbackManager;
+    private AccessTokenTracker accessTokenTracker;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -62,6 +66,11 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         };
+
+        if(isLoggedIn()) {
+            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+            startActivity(intent);
+        }
 
         loginButton = (LoginButton)findViewById(R.id.login_button);
         textview = (TextView) findViewById(R.id.login_status);
@@ -91,6 +100,20 @@ public class LoginActivity extends AppCompatActivity {
         firebase = new Firebase(getString(R.string.firebase_url));
 
     }
+
+    private boolean isLoggedIn(){
+        // check firebase login
+        for (UserInfo user: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+            if (user.getProviderId().equals("facebook.com")) {
+                //check logged in to facebook
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+                return accessToken != null;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
