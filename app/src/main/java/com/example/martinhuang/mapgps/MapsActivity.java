@@ -19,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -63,12 +65,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private NavigationView navigationDrawer;
     private ActionBarDrawerToggle drawerToggle;
 
+    private TextView tvLat;
+    private TextView tvLng;
+
     private static final String TAG = "MapsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        init();
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+    }
+
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+    }
+
+    private void init() {
+
+        tvLat = (TextView)findViewById(R.id.tv_lat);
+        tvLng = (TextView)findViewById(R.id.tv_lng);
 
         //setup toolbar
         toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -81,35 +105,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationDrawer = (NavigationView)findViewById(R.id.nvView);
         setupDrawerContent(navigationDrawer);
 
-
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
-    private ActionBarDrawerToggle setupDrawerToggle() {
-        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-    }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        mMap.setInfoWindowAdapter((GoogleMap.InfoWindowAdapter) this);
 
 
         mMap = googleMap;
@@ -201,9 +206,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng latLng = new LatLng(currentLat, currentLong);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title("Current Location");
-        markerOptions.snippet("Long: " + currentLong + "\nLat: " + currentLat);
+        //markerOptions.title("Current Location");
+        //markerOptions.snippet("Long: " + currentLong + "\nLat: " + currentLat);
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+//        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//            @Override
+//            public View getInfoWindow(Marker marker) {
+//                return null;
+//            }
+//
+//            @Override
+//            public View getInfoContents(Marker marker) {
+//                View view = getLayoutInflater().inflate(R.layout.info_window_layout,null);
+//                LatLng position = marker.getPosition();
+//
+//                TextView tvLat = (TextView)findViewById(R.id.tv_lat);
+//
+//                tvLat.setText("Current Lat: " + position.latitude);
+//                tvLng.setText("Current Long: " + position.longitude);
+//                //tvLng.setText("testing testing testing testing ");
+//                return view;
+//            }
+//        });
+
         mCurrLocationMarker = mMap.addMarker(markerOptions);
 
 
@@ -211,10 +236,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
+
         //stop location updates
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
 
     }
 
@@ -325,6 +356,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
-
 
 }
