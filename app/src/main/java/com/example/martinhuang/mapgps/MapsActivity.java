@@ -1,6 +1,5 @@
 package com.example.martinhuang.mapgps;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.Manifest;
@@ -14,8 +13,10 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -60,6 +61,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
     private NavigationView navigationDrawer;
+    private ActionBarDrawerToggle drawerToggle;
 
     private static final String TAG = "MapsActivity";
 
@@ -74,6 +76,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //drawer menu layout
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = setupDrawerToggle();
 
         navigationDrawer = (NavigationView)findViewById(R.id.nvView);
         setupDrawerContent(navigationDrawer);
@@ -90,6 +93,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -103,7 +111,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -119,13 +126,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
+
+                //reposition the current location button on map
+                mMap.setPadding(0,dpToPx(56),0,0);
             }
         }
         else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
-//
+
 //        // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -296,6 +306,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -309,6 +320,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
+    }
 
 
 }
