@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         if(isLoggedIn()) {
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
             startActivity(intent);
+            finish();
         }
 
         loginButton = (LoginButton)findViewById(R.id.login_button);
