@@ -10,7 +10,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:id="@+id/map"
         tools:context="com.example.martinhuang.mapgps.MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment">
@@ -19,6 +18,20 @@
             layout="@layout/toolbar"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            />
+
+        <EditText
+            android:id="@+id/et"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:hint="What's cool?"
+            android:visibility="invisible"
+            android:background="#99000000"
+            android:textColor="@color/colorWhite"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:imeOptions="actionDone"
+            android:inputType="text"
             />
 
     </fragment>
@@ -31,6 +44,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@android:color/white"
+        app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer" />
 
 </android.support.v4.widget.DrawerLayout>

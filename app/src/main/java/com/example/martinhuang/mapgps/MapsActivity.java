@@ -1,6 +1,9 @@
 package com.example.martinhuang.mapgps;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.Manifest;
 import android.os.Build;
@@ -8,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -18,8 +20,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -105,6 +114,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationDrawer = (NavigationView)findViewById(R.id.nvView);
         setupDrawerContent(navigationDrawer);
 
+        //animate the hamburger icon turning
+        drawerLayout.addDrawerListener(drawerToggle);
+
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -113,9 +126,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
-        mMap.setInfoWindowAdapter((GoogleMap.InfoWindowAdapter) this);
-
 
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -133,7 +143,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.setMyLocationEnabled(true);
 
                 //reposition the current location button on map
-                mMap.setPadding(0,dpToPx(56),0,0);
+                mMap.setPadding(0,dpToPx(65),0,0);
             }
         }
         else {
@@ -194,6 +204,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentLat = location.getLatitude();
         currentLong = location.getLongitude();
 
+        //for writing to firebase
         Map<String, String> coordinates = new HashMap<String, String>();
         coordinates.put("Long", Double.toString(currentLong));
         coordinates.put("Lat", Double.toString(currentLat));
@@ -204,33 +215,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Place current location marker
         LatLng latLng = new LatLng(currentLat, currentLong);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        //markerOptions.title("Current Location");
-        //markerOptions.snippet("Long: " + currentLong + "\nLat: " + currentLat);
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-//        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-//            @Override
-//            public View getInfoWindow(Marker marker) {
-//                return null;
-//            }
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.position(latLng);
+//        markerOptions.title("Current Location");
+//        markerOptions.snippet("Long: " + currentLong + "\nLat: " + currentLat);
+//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 //
-//            @Override
-//            public View getInfoContents(Marker marker) {
-//                View view = getLayoutInflater().inflate(R.layout.info_window_layout,null);
-//                LatLng position = marker.getPosition();
+//        mCurrLocationMarker = mMap.addMarker(markerOptions);
 //
-//                TextView tvLat = (TextView)findViewById(R.id.tv_lat);
-//
-//                tvLat.setText("Current Lat: " + position.latitude);
-//                tvLng.setText("Current Long: " + position.longitude);
-//                //tvLng.setText("testing testing testing testing ");
-//                return view;
-//            }
-//        });
-
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
-
 
         //move map camera / zoom
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -243,12 +235,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-    }
-
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
@@ -340,15 +326,65 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         drawerToggle.syncState();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-//                        selectDrawerItem(menuItem);
+                        selectDrawerItem(menuItem);
                         return true;
                     }
                 });
+    }
+
+    private void selectDrawerItem(MenuItem menuItem) {
+
+        switch(menuItem.getItemId()) {
+            case R.id.action_message:
+                drawerLayout.closeDrawers();
+                final EditText editText = (EditText)findViewById(R.id.et);
+                editText.setSingleLine();
+                int backgroundHeight = (int)editText.getTextSize()*(int)1.2;
+               // editText.setHeight(backgroundHeight);
+                editText.setVisibility(View.VISIBLE);
+                editText.setFocusableInTouchMode(true);
+                editText.requestFocus();
+
+                final InputMethodManager inputManager =
+                        (InputMethodManager) MapsActivity.this.
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.showSoftInput(editText,InputMethodManager.SHOW_IMPLICIT);
+
+                editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if(actionId == EditorInfo.IME_ACTION_DONE) {
+
+                            Toast.makeText(MapsActivity.this,editText.getText(),Toast.LENGTH_LONG).show();
+
+                            editText.clearFocus();
+                            editText.setVisibility(View.INVISIBLE);
+
+                            inputManager.hideSoftInputFromWindow(
+                                    MapsActivity.this.getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                            return true;
+
+                        }
+                        return false;
+                    }
+                });
+                break;
+
+
+        }
     }
 
     public int dpToPx(int dp) {
