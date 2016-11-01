@@ -57,7 +57,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener,
+        GoogleMap.InfoWindowAdapter {
 
 
     Firebase firebase;
@@ -77,6 +78,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView tvLat;
     private TextView tvLng;
 
+    private String messageText;
+
+    SupportMapFragment mapFragment;
+    GoogleMap googleMap;
+
     private static final String TAG = "MapsActivity";
 
     @Override
@@ -87,9 +93,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         init();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
 
     }
 
@@ -151,10 +158,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.setMyLocationEnabled(true);
         }
 
-//        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.setInfoWindowAdapter(this);
 
 
     }
@@ -195,9 +199,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
+//        if (mCurrLocationMarker != null) {
+//            mCurrLocationMarker.remove();
+//        }
 
 //        firebase = new Firebase("https://mapgps-145221.firebaseio.com/");
 
@@ -347,6 +351,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void selectDrawerItem(MenuItem menuItem) {
 
         switch(menuItem.getItemId()) {
+
+            //post message
             case R.id.action_message:
                 drawerLayout.closeDrawers();
                 final EditText editText = (EditText)findViewById(R.id.et);
@@ -354,6 +360,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 int backgroundHeight = (int)editText.getTextSize()*(int)1.2;
                // editText.setHeight(backgroundHeight);
                 editText.setVisibility(View.VISIBLE);
+
+                //so keyboard can auto show
                 editText.setFocusableInTouchMode(true);
                 editText.requestFocus();
 
@@ -375,22 +383,60 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             inputManager.hideSoftInputFromWindow(
                                     MapsActivity.this.getCurrentFocus().getWindowToken(),
                                     InputMethodManager.HIDE_NOT_ALWAYS);
+                            messageText = editText.getText().toString();
+                            dropMessage(editText.getText().toString());
                             return true;
 
                         }
                         return false;
                     }
                 });
+
                 break;
-
-
         }
     }
 
-    public int dpToPx(int dp) {
+    private void dropMessage(String message) {
+        LatLng latLng = new LatLng(currentLat, currentLong);
+        mMap.addMarker(new MarkerOptions().position(latLng).draggable(false).title(message));
+    }
+
+    private int dpToPx(int dp) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
 
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return customMessageWindow(marker);
+    }
+
+    private View customMessageWindow(Marker marker) {
+
+        LinearLayout infoView = new LinearLayout(MapsActivity.this);
+        LinearLayout.LayoutParams infoViewParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        infoView.setOrientation(LinearLayout.HORIZONTAL);
+        infoView.setLayoutParams(infoViewParams);
+
+        LinearLayout subInfoView = new LinearLayout(MapsActivity.this);
+        LinearLayout.LayoutParams subInfoViewParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        subInfoView.setOrientation(LinearLayout.VERTICAL);
+        subInfoView.setLayoutParams(subInfoViewParams);
+
+        TextView subInfoMessage = new TextView(MapsActivity.this);
+        subInfoMessage.setText(messageText);
+        subInfoView.addView(subInfoMessage);
+
+        infoView.addView(subInfoView);
+
+        return infoView;
+    }
 }
