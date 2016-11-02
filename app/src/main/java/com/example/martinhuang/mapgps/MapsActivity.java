@@ -364,7 +364,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                // editText.setHeight(backgroundHeight);
                 editText.getText().clear();
                 editText.setVisibility(View.VISIBLE);
-                editText.setHintTextColor(R.color.colorWhite);
+                editText.setHint("Write something cool");
+
+
 
                 //so keyboard can auto show
                 editText.setFocusableInTouchMode(true);
@@ -387,17 +389,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 editText.clearFocus();
                                 editText.setVisibility(View.INVISIBLE);
 
-                                inputManager.hideSoftInputFromWindow(
-                                        MapsActivity.this.getCurrentFocus().getWindowToken(),
-                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                hideKeyboard(inputManager);
+
                                 messageText = editText.getText().toString();
                                 dropMessage(editText.getText().toString());
                             }
                             else {
 
-                                inputManager.hideSoftInputFromWindow(
-                                        MapsActivity.this.getCurrentFocus().getWindowToken(),
-                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                hideKeyboard(inputManager);
                                 editText.setVisibility(View.INVISIBLE);
 
                                 Toast.makeText(MapsActivity.this, "ERROR: Have to enter text to post!", Toast.LENGTH_SHORT)
@@ -412,6 +411,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 break;
         }
+    }
+
+    private void hideKeyboard(InputMethodManager inputManager) {
+
+        inputManager.hideSoftInputFromWindow(
+                MapsActivity.this.getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+
     }
 
     private void dropMessage(String message) {
