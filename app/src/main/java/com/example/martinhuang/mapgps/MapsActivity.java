@@ -150,7 +150,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.setMyLocationEnabled(true);
 
                 //reposition the current location button on map
-                mMap.setPadding(0,dpToPx(65),0,0);
+                mMap.setPadding(0,dpToPx(80),0,0);
             }
         }
         else {
@@ -354,12 +354,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             //post message
             case R.id.action_message:
+
+
                 drawerLayout.closeDrawers();
+
                 final EditText editText = (EditText)findViewById(R.id.et);
                 editText.setSingleLine();
                 int backgroundHeight = (int)editText.getTextSize()*(int)1.2;
                // editText.setHeight(backgroundHeight);
+                editText.getText().clear();
                 editText.setVisibility(View.VISIBLE);
+                editText.setHintTextColor(R.color.colorWhite);
 
                 //so keyboard can auto show
                 editText.setFocusableInTouchMode(true);
@@ -375,18 +380,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if(actionId == EditorInfo.IME_ACTION_DONE) {
 
-                            Toast.makeText(MapsActivity.this,editText.getText(),Toast.LENGTH_LONG).show();
+                            if(editText.getText().toString().trim().length() != 0) {
 
-                            editText.clearFocus();
-                            editText.setVisibility(View.INVISIBLE);
+                                Toast.makeText(MapsActivity.this,editText.getText(),Toast.LENGTH_LONG).show();
 
-                            inputManager.hideSoftInputFromWindow(
-                                    MapsActivity.this.getCurrentFocus().getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                            messageText = editText.getText().toString();
-                            dropMessage(editText.getText().toString());
+                                editText.clearFocus();
+                                editText.setVisibility(View.INVISIBLE);
+
+                                inputManager.hideSoftInputFromWindow(
+                                        MapsActivity.this.getCurrentFocus().getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                messageText = editText.getText().toString();
+                                dropMessage(editText.getText().toString());
+                            }
+                            else {
+
+                                inputManager.hideSoftInputFromWindow(
+                                        MapsActivity.this.getCurrentFocus().getWindowToken(),
+                                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                editText.setVisibility(View.INVISIBLE);
+
+                                Toast.makeText(MapsActivity.this, "ERROR: Have to enter text to post!", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+
                             return true;
-
                         }
                         return false;
                     }
