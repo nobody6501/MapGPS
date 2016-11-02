@@ -2,10 +2,13 @@ package com.example.martinhuang.mapgps;
 
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     private Firebase firebase;
 
     private TextView textview;
+    private ImageView imageView;
+    Drawable drawable;
 
     private static final String TAG = "LoginActivity";
 
@@ -63,7 +68,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 updateUI(user);
-
             }
         };
 
@@ -100,6 +104,11 @@ public class LoginActivity extends AppCompatActivity {
                 textview.setText("Login attempt failed.");
             }
         });
+
+        imageView = (ImageView)findViewById(R.id.banner);
+        //api 22
+        drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.banner,null);
+        imageView.setImageDrawable(drawable);
 
 
 
