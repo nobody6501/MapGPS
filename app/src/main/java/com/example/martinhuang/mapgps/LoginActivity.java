@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         if(isLoggedIn()) {
+            //already logged in, go to Maps
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
             startActivity(intent);
             finish();
@@ -78,6 +79,8 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+
+                firebase = new Firebase(getString(R.string.firebase_url));
 
                 textview.setText("Logged in !!! ");
                 handleFacebookAccessToken(loginResult.getAccessToken());
@@ -98,7 +101,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        firebase = new Firebase(getString(R.string.firebase_url));
+
+
+
 
     }
 

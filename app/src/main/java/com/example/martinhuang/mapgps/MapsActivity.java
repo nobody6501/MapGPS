@@ -1,6 +1,7 @@
 package com.example.martinhuang.mapgps;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -32,6 +33,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.firebase.client.Firebase;
 import com.firebase.client.snapshot.DoubleNode;
 import com.google.android.gms.common.ConnectionResult;
@@ -88,6 +91,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_maps);
 
         init();
@@ -410,6 +414,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
 
                 break;
+            case R.id.logout:
+
+                LoginManager.getInstance().logOut();
+                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+
         }
     }
 
