@@ -1,5 +1,7 @@
 package com.example.martinhuang.mapgps;
 
+import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -61,6 +63,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -345,11 +348,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.search:
+                startSearchLocationActivity(findViewById(R.id.search));
                 return true;
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @TargetApi(21)
+    private void startSearchLocationActivity(View view) {
+        Intent intent = new Intent(MapsActivity.this, SearchLocationActivity.class);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int[] coordinates = new int[2];
+            view.getLocationInWindow(coordinates);
+
+            int cx = (int) (coordinates[0] + view.getWidth() / 2.0);
+            int cy = (int) (coordinates[1] + view.getHeight() / 2.0);
+
+            intent.putExtra(SearchLocationActivity.CENTER_X, cx);
+            intent.putExtra(SearchLocationActivity.CENTER_Y, cy);
+
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+
+        } else {
+            startActivity(intent);
+        }
+
     }
 
     @Override
@@ -383,7 +408,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //post message
             case R.id.action_message:
 
-
                 drawerLayout.closeDrawers();
 
                 final EditText editText = (EditText)findViewById(R.id.et);
@@ -393,8 +417,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 editText.getText().clear();
                 editText.setVisibility(View.VISIBLE);
                 editText.setHint("Write something cool");
-
-
 
                 //so keyboard can auto show
                 editText.setFocusableInTouchMode(true);
