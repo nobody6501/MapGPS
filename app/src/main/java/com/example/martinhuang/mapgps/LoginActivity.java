@@ -9,6 +9,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView textview;
     private ImageView imageView;
     Drawable drawable;
+    RelativeLayout relativeLayout;
 
     private static final String TAG = "LoginActivity";
 
@@ -106,12 +108,12 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         imageView = (ImageView)findViewById(R.id.banner);
+        relativeLayout = (RelativeLayout)findViewById(R.id.activity_login);
         //api 22
         drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.banner,null);
         imageView.setImageDrawable(drawable);
-
-
-
+        drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.loginbackground,null);
+        relativeLayout.setBackground(drawable);
 
 
     }
