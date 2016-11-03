@@ -26,6 +26,15 @@
         android:layout_centerHorizontal="true"
         android:background="@color/colorGrey"/>
 
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="visible"/>
+
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"

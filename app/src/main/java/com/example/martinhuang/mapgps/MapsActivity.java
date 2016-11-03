@@ -500,4 +500,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         return infoView;
     }
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+    }
 }
