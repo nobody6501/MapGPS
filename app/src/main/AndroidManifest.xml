@@ -53,7 +53,7 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@style/FullyTranslucent" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".MapsActivity"
             android:screenOrientation="portrait"></activity>
         <activity

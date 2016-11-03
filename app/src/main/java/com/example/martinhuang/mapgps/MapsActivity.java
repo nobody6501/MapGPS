@@ -444,6 +444,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                overridePendingTransition(R.anim.left_to_right ,R.anim.right_to_left);
                 finish();
 
         }

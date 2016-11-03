@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SnapMap</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">SnapMap</string>
     <string name="facebook_app_id">269042033490147</string>
     <string name="firebase_url">https://mapgps-145221.firebaseio.com/</string>
     <string name="title_activity_drawer">DrawerActivity</string>
