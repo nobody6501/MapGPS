@@ -26,6 +26,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -46,11 +47,13 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
+    private String userID;
 
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private Firebase firebase;
+
 
     private TextView textview;
     private ImageView imageView;
@@ -67,10 +70,10 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_login);
         Firebase.setAndroidContext(this);
+        mAuth = FirebaseAuth.getInstance();
         progressBar = (ProgressBar)findViewById(R.id.progress_spinner);
         progressBar.setVisibility(View.INVISIBLE);
 
-        mAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -79,10 +82,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
+        firebase = new Firebase(getString(R.string.firebase_url));
+
         if(isLoggedIn()) {
             //already logged in, go to Maps
 //            progressBar.setVisibility(View.VISIBLE);
+            userID = Profile.getCurrentProfile().getId();
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+            intent.putExtra(MapsActivity.USER_ID, userID);
             startActivity(intent);
             overridePendingTransition(R.anim.enter,R.anim.exit);
             progressBar.setVisibility(View.INVISIBLE);
@@ -96,12 +103,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
 
                 Log.d(TAG, "LOGGING IN!!!!!");
-                firebase = new Firebase(getString(R.string.firebase_url));
+
+                userID = Profile.getCurrentProfile().getId();
 
                 textview.setText("Logged in !!! ");
                 handleFacebookAccessToken(loginResult.getAccessToken());
 //                progressBar.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                intent.putExtra(MapsActivity.USER_ID, userID);
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter,R.anim.exit);
                 progressBar.setVisibility(View.INVISIBLE);

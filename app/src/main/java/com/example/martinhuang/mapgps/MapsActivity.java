@@ -72,6 +72,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         GoogleMap.InfoWindowAdapter {
 
 
+    public static final String USER_ID = "USER_ID";
+
     Firebase firebase;
     private GoogleMap mMap;
     Location mLastLocation;
@@ -90,6 +92,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView tvLng;
 
     private String messageText;
+    private String userID;
 
     SupportMapFragment mapFragment;
     GoogleMap googleMap;
@@ -143,6 +146,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
+
+        Intent intent = getIntent();
+        userID = intent.getStringExtra(USER_ID);
+
+        Toast.makeText(MapsActivity.this, userID, Toast.LENGTH_SHORT).show();
 
     }
 

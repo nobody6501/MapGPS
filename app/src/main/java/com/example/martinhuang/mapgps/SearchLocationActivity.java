@@ -12,10 +12,10 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Transition;
+
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.RelativeLayout;
+
 
 public class SearchLocationActivity extends AppCompatActivity {
 
@@ -29,6 +29,7 @@ public class SearchLocationActivity extends AppCompatActivity {
 
     protected Toolbar toolbar;
     RecyclerView recyclerView;
+    InputMethodManager inputManager;
     SearchView searchView;
 
     @Override
@@ -66,7 +67,7 @@ public class SearchLocationActivity extends AppCompatActivity {
     protected void revealTransition(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Intent intent = getIntent();
-            revealAnimationCX = intent.getIntExtra(CENTER_X,0);
+            revealAnimationCX = intent.getIntExtra(CENTER_X, 0);
             revealAnimationCY = intent.getIntExtra(CENTER_Y, 0);
 
             RevealTransition revealTransition = new RevealTransition(revealAnimationCX, revealAnimationCY);
@@ -107,6 +108,19 @@ public class SearchLocationActivity extends AppCompatActivity {
             getWindow().setEnterTransition(revealTransition);
         }
     }
+
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//
+//        super.onWindowFocusChanged(hasFocus);
+//
+//        if(hasFocus) {
+//            inputManager.hideSoftInputFromWindow(
+//                    SearchLocationActivity.this.getCurrentFocus().getWindowToken(),
+//                    InputMethodManager.HIDE_NOT_ALWAYS);
+//        }
+//
+//    }
+
 
     protected void setupSearchView() {
         /* Show the soft keyboard */
