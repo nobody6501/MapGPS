@@ -150,7 +150,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = getIntent();
         userID = intent.getStringExtra(USER_ID);
 
-        Toast.makeText(MapsActivity.this, userID, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID, Toast.LENGTH_SHORT).show();
 
     }
 

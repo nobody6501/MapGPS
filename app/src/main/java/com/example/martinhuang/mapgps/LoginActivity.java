@@ -39,6 +39,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -47,12 +49,16 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
-    private String userID;
+    private String facebookUserID;
 
     //firebase
     private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference mDatabase;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private Firebase firebase;
+    private String firebaseUserID;
+    private String email;
 
 
     private TextView textview;
@@ -71,14 +77,16 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         Firebase.setAndroidContext(this);
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseUser = mAuth.getCurrentUser();
         progressBar = (ProgressBar)findViewById(R.id.progress_spinner);
         progressBar.setVisibility(View.INVISIBLE);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                updateUI(user);
+                firebaseUser = firebaseAuth.getCurrentUser();
+                updateUI(firebaseUser);
             }
         };
 
@@ -87,15 +95,35 @@ public class LoginActivity extends AppCompatActivity {
         if(isLoggedIn()) {
             //already logged in, go to Maps
 //            progressBar.setVisibility(View.VISIBLE);
-            userID = Profile.getCurrentProfile().getId();
+            facebookUserID = Profile.getCurrentProfile().getId();
+            firebaseUserID = firebaseUser.getUid();
+            email = firebaseUser.getEmail();
+            mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
+            mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-            intent.putExtra(MapsActivity.USER_ID, userID);
+            intent.putExtra(MapsActivity.USER_ID, facebookUserID);
             startActivity(intent);
             overridePendingTransition(R.anim.enter,R.anim.exit);
             progressBar.setVisibility(View.INVISIBLE);
             finish();
         }
 
+        initFB();
+        initUI();
+
+    }
+
+    private void initUI() {
+        imageView = (ImageView)findViewById(R.id.banner);
+        relativeLayout = (RelativeLayout)findViewById(R.id.activity_login);
+        //api 22
+        drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.banner,null);
+        imageView.setImageDrawable(drawable);
+        drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.loginbackground,null);
+        relativeLayout.setBackground(drawable);
+    }
+
+    private void initFB() {
         loginButton = (LoginButton)findViewById(R.id.login_button);
         textview = (TextView) findViewById(R.id.login_status);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -104,13 +132,17 @@ public class LoginActivity extends AppCompatActivity {
 
                 Log.d(TAG, "LOGGING IN!!!!!");
 
-                userID = Profile.getCurrentProfile().getId();
+                facebookUserID = Profile.getCurrentProfile().getId();
+                firebaseUserID = firebaseUser.getUid();
+                email = firebaseUser.getEmail();
+                mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
+                mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
 
                 textview.setText("Logged in !!! ");
                 handleFacebookAccessToken(loginResult.getAccessToken());
 //                progressBar.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                intent.putExtra(MapsActivity.USER_ID, userID);
+                intent.putExtra(MapsActivity.USER_ID, facebookUserID);
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter,R.anim.exit);
                 progressBar.setVisibility(View.INVISIBLE);
@@ -131,16 +163,6 @@ public class LoginActivity extends AppCompatActivity {
                 textview.setText("Login attempt failed.");
             }
         });
-
-        imageView = (ImageView)findViewById(R.id.banner);
-        relativeLayout = (RelativeLayout)findViewById(R.id.activity_login);
-        //api 22
-        drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.banner,null);
-        imageView.setImageDrawable(drawable);
-        drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.loginbackground,null);
-        relativeLayout.setBackground(drawable);
-
-
     }
 
     private boolean isLoggedIn(){
@@ -165,6 +187,7 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             //Code here for what you want to do after login
+
 
         }
     }
