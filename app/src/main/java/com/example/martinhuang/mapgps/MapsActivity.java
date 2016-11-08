@@ -62,6 +62,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.lang.annotation.Target;
 import java.util.HashMap;
@@ -77,6 +79,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String FIREBASE_ID = "FIREBASE_ID";
 
     Firebase firebase;
+    private DatabaseReference mDatabase;
     private GoogleMap mMap;
     Location mLastLocation;
     Marker mCurrLocationMarker;
@@ -125,6 +128,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void init() {
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         tvLat = (TextView)findViewById(R.id.tv_lat);
         tvLng = (TextView)findViewById(R.id.tv_lng);
@@ -450,6 +455,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             if(editText.getText().toString().trim().length() != 0) {
 
                                 Toast.makeText(MapsActivity.this,editText.getText(),Toast.LENGTH_LONG).show();
+
+
+                                mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
+                                        .push().setValue(editText.getText().toString());
 
                                 editText.clearFocus();
                                 editText.setVisibility(View.INVISIBLE);
