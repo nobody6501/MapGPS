@@ -73,6 +73,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public static final String USER_ID = "USER_ID";
+    public static final String EMAIL = "EMAIL";
+    public static final String FIREBASE_ID = "FIREBASE_ID";
 
     Firebase firebase;
     private GoogleMap mMap;
@@ -93,6 +95,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private String messageText;
     private String userID;
+    private String email;
+    private String firebaseUserID;
 
     SupportMapFragment mapFragment;
     GoogleMap googleMap;
@@ -149,8 +153,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Intent intent = getIntent();
         userID = intent.getStringExtra(USER_ID);
+        email = intent.getStringExtra(EMAIL);
+        firebaseUserID = intent.getStringExtra(FIREBASE_ID);
 
-        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID + "\nEmail: " + email +
+                "\n Firebase: " + firebaseUserID, Toast.LENGTH_LONG).show();
 
     }
 

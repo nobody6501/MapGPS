@@ -95,13 +95,9 @@ public class LoginActivity extends AppCompatActivity {
         if(isLoggedIn()) {
             //already logged in, go to Maps
 //            progressBar.setVisibility(View.VISIBLE);
-            facebookUserID = Profile.getCurrentProfile().getId();
-            firebaseUserID = firebaseUser.getUid();
-            email = firebaseUser.getEmail();
-            mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
-            mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
+            initFirebaseData();
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-            intent.putExtra(MapsActivity.USER_ID, facebookUserID);
+            intentExtras(intent);
             startActivity(intent);
             overridePendingTransition(R.anim.enter,R.anim.exit);
             progressBar.setVisibility(View.INVISIBLE);
@@ -111,6 +107,24 @@ public class LoginActivity extends AppCompatActivity {
         initFB();
         initUI();
 
+    }
+
+    private void initFirebaseData() {
+
+        facebookUserID = Profile.getCurrentProfile().getId();
+        firebaseUserID = firebaseUser.getUid();
+        email = firebaseUser.getEmail();
+        mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
+        mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
+
+
+    }
+
+
+    private void intentExtras(Intent intent) {
+        intent.putExtra(MapsActivity.USER_ID, facebookUserID);
+        intent.putExtra(MapsActivity.FIREBASE_ID, firebaseUserID);
+        intent.putExtra(MapsActivity.EMAIL, email);
     }
 
     private void initUI() {
@@ -132,17 +146,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 Log.d(TAG, "LOGGING IN!!!!!");
 
-                facebookUserID = Profile.getCurrentProfile().getId();
-                firebaseUserID = firebaseUser.getUid();
-                email = firebaseUser.getEmail();
-                mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
-                mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
+                initFirebaseData();
 
                 textview.setText("Logged in !!! ");
                 handleFacebookAccessToken(loginResult.getAccessToken());
 //                progressBar.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                intent.putExtra(MapsActivity.USER_ID, facebookUserID);
+                intentExtras(intent);
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter,R.anim.exit);
                 progressBar.setVisibility(View.INVISIBLE);
