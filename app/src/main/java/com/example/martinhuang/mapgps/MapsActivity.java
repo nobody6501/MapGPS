@@ -208,10 +208,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void initListenDataChange() {
 
-        mDatabase.child("Users").addValueEventListener(new ValueEventListener() {
+        mDatabase.child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot child: dataSnapshot.getChildren()) {
+
+                //user firebase ID
+                for(DataSnapshot firebaseID: dataSnapshot.getChildren()) {
+
+                    Toast.makeText(MapsActivity.this,firebaseID.getKey(),Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -220,30 +224,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        })
+        });
 
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild("Posts")) {
-                    Message message = dataSnapshot.getValue(Message.class);
-                    String text = message.getMessage();
-
-                    double tempLat = Double.parseDouble(message.getLatitude());
-                    double tempLng = Double.parseDouble(message.getLongitude());
-
-                    LatLng tempPosition = new LatLng(tempLat, tempLng);
-                    dropRetrievedMessages(text, tempPosition);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        mDatabase.addValueEventListener(postListener);
+//        ValueEventListener postListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.hasChild("Posts")) {
+//                    Message message = dataSnapshot.getValue(Message.class);
+//                    String text = message.getMessage();
+//
+//                    double tempLat = Double.parseDouble(message.getLatitude());
+//                    double tempLng = Double.parseDouble(message.getLongitude());
+//
+//                    LatLng tempPosition = new LatLng(tempLat, tempLng);
+//                    dropRetrievedMessages(text, tempPosition);
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//        mDatabase.addValueEventListener(postListener);
     }
 
     protected synchronized void buildGoogleApiClient() {
