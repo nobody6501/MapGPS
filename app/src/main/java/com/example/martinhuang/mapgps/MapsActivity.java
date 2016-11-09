@@ -100,6 +100,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String userID;
     private String email;
     private String firebaseUserID;
+    private String messageKey;
+    private LatLng latLng;
 
     SupportMapFragment mapFragment;
     GoogleMap googleMap;
@@ -456,9 +458,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                 Toast.makeText(MapsActivity.this,editText.getText(),Toast.LENGTH_LONG).show();
 
+                                Message message = new Message();
+                                latLng = new LatLng(currentLat, currentLong);
+                                message.setLatLng(latLng.toString());
+                                message.setMessage(editText.getText().toString());
+
 
                                 mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
-                                        .push().setValue(editText.getText().toString());
+                                        .push().child("Message").setValue(message);
+
+
+//                                mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
+//                                        .child(messageKey).child("Location").setValue(latLng);
 
                                 editText.clearFocus();
                                 editText.setVisibility(View.INVISIBLE);
@@ -505,7 +516,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void dropMessage(String message) {
-        LatLng latLng = new LatLng(currentLat, currentLong);
+        latLng = new LatLng(currentLat, currentLong);
         mMap.addMarker(new MarkerOptions().position(latLng).draggable(false).title(message));
     }
 
