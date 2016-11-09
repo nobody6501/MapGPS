@@ -9,7 +9,8 @@ import com.google.android.gms.maps.model.LatLng;
 public class Message {
 
     private String message;
-    private String latLng;
+    private String latitude;
+    private String longitude;
 
     public Message() {
 
@@ -23,11 +24,19 @@ public class Message {
         this.message = message;
     }
 
-    public String getLatLng() {
-        return latLng;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setLatLng(String latLng) {
-        this.latLng = latLng;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

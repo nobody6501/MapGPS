@@ -62,8 +62,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.lang.annotation.Target;
 import java.util.HashMap;
@@ -163,8 +166,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         email = intent.getStringExtra(EMAIL);
         firebaseUserID = intent.getStringExtra(FIREBASE_ID);
 
-        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID + "\nEmail: " + email +
-                "\n Firebase: " + firebaseUserID, Toast.LENGTH_LONG).show();
+        //tested getting info from loginactivity ok
+//        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID + "\nEmail: " + email +
+//                "\n Firebase: " + firebaseUserID, Toast.LENGTH_LONG).show();
 
     }
 
@@ -197,7 +201,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.setInfoWindowAdapter(this);
 
+        initListenDataChange();
 
+
+    }
+
+    private void initListenDataChange() {
+
+        mDatabase.child("Users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot child: dataSnapshot.getChildren()) {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        })
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild("Posts")) {
+                    Message message = dataSnapshot.getValue(Message.class);
+                    String text = message.getMessage();
+
+                    double tempLat = Double.parseDouble(message.getLatitude());
+                    double tempLng = Double.parseDouble(message.getLongitude());
+
+                    LatLng tempPosition = new LatLng(tempLat, tempLng);
+                    dropRetrievedMessages(text, tempPosition);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        mDatabase.addValueEventListener(postListener);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -255,7 +301,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d("TAG","firebasechild ");
 
         //Place current location marker
-        LatLng latLng = new LatLng(currentLat, currentLong);
+        latLng = new LatLng(currentLat, currentLong);
 //        MarkerOptions markerOptions = new MarkerOptions();
 //        markerOptions.position(latLng);
 //        markerOptions.title("Current Location");
@@ -460,16 +506,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                 Message message = new Message();
                                 latLng = new LatLng(currentLat, currentLong);
-                                message.setLatLng(latLng.toString());
                                 message.setMessage(editText.getText().toString());
+                                message.setLatitude(Double.toString(currentLat));
+                                message.setLongitude(Double.toString(currentLong));
 
+
+                                messageKey = mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
+                                        .push().getKey();
+//                                mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
+//                                        .child("Message").setValue(message).push();
 
                                 mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
                                         .push().child("Message").setValue(message);
-
-
-//                                mDatabase.child("users").child(firebaseUserID).child("Posts").child("Messages")
-//                                        .child(messageKey).child("Location").setValue(latLng);
 
                                 editText.clearFocus();
                                 editText.setVisibility(View.INVISIBLE);
@@ -518,6 +566,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void dropMessage(String message) {
         latLng = new LatLng(currentLat, currentLong);
         mMap.addMarker(new MarkerOptions().position(latLng).draggable(false).title(message));
+    }
+
+    private void dropRetrievedMessages(String message, LatLng position) {
+        mMap.addMarker(new MarkerOptions().position(position).draggable(false).title(message));
     }
 
     private int dpToPx(int dp) {
