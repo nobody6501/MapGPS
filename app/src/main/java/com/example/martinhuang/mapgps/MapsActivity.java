@@ -214,8 +214,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 //user firebase ID
                 for(DataSnapshot firebaseID: dataSnapshot.getChildren()) {
+                    //get Posts
+                    for(DataSnapshot posts: firebaseID.getChildren()) {
 
-                    Toast.makeText(MapsActivity.this,firebaseID.getKey(),Toast.LENGTH_LONG).show();
+                        if(posts.getKey().equals("Posts")) {
+
+                            Toast.makeText(MapsActivity.this,posts.getKey(),Toast.LENGTH_LONG).show();
+
+                        }
+                    }
+
 
                 }
             }
