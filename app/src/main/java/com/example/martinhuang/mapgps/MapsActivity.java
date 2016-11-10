@@ -201,6 +201,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap.setInfoWindowAdapter(this);
 
+
         initListenDataChange();
 
 
@@ -212,6 +213,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                Double tempLat = 0.0;
+                Double tempLong = 0.0;
+                LatLng position;
+
+
                 //user firebase ID
                 for(DataSnapshot firebaseID: dataSnapshot.getChildren()) {
                     //get Posts
@@ -219,12 +225,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         if(posts.getKey().equals("Posts")) {
 
-                            Toast.makeText(MapsActivity.this,posts.getKey(),Toast.LENGTH_LONG).show();
+                            for(DataSnapshot messages: posts.getChildren()) {
 
+                                //unique posts
+                                for(DataSnapshot unique: messages.getChildren()) {
+                                    for(DataSnapshot message : unique.getChildren()) {
+                                        for(DataSnapshot data: message.getChildren()) {
+
+                                            if (data.getKey().equals("latitude")) {
+                                                tempLat = Double.parseDouble(data.getValue().toString());
+                                            } else if (data.getKey().equals("longitude")) {
+                                                tempLong = Double.parseDouble(data.getValue().toString());
+                                            } else {
+                                                messageText = data.getValue().toString();
+                                            }
+                                        }
+
+                                    }
+//                                    Toast.makeText(MapsActivity.this,posts.getKey(),Toast.LENGTH_LONG).show();
+
+                                    if(!messageText.equals("") && !tempLat.equals(0.0) && !tempLong.equals(0.0)) {
+
+                                        position = new LatLng(tempLat, tempLong);
+                                        dropRetrievedMessages(messageText, position);
+                                    }
+                                }
+                            }
                         }
                     }
-
-
                 }
             }
 
@@ -233,29 +261,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
-
-//        ValueEventListener postListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if(dataSnapshot.hasChild("Posts")) {
-//                    Message message = dataSnapshot.getValue(Message.class);
-//                    String text = message.getMessage();
-//
-//                    double tempLat = Double.parseDouble(message.getLatitude());
-//                    double tempLng = Double.parseDouble(message.getLongitude());
-//
-//                    LatLng tempPosition = new LatLng(tempLat, tempLng);
-//                    dropRetrievedMessages(text, tempPosition);
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        };
-//        mDatabase.addValueEventListener(postListener);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -537,7 +542,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 hideKeyboard(inputManager);
 
                                 messageText = editText.getText().toString();
-                                dropMessage(editText.getText().toString());
+//                                dropMessage(messageText);
+                                dropRetrievedMessages(messageText, latLng);
                             }
                             else {
 
@@ -582,6 +588,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void dropRetrievedMessages(String message, LatLng position) {
         mMap.addMarker(new MarkerOptions().position(position).draggable(false).title(message));
+
+        Toast.makeText(MapsActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     private int dpToPx(int dp) {
