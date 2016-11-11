@@ -42,6 +42,9 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -87,10 +90,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser = firebaseAuth.getCurrentUser();
                 updateUI(firebaseUser);
+
             }
         };
 
         firebase = new Firebase(getString(R.string.firebase_url));
+        initUI();
 
         if(isLoggedIn()) {
             //already logged in, go to Maps
@@ -104,25 +109,40 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
 
-        initFB();
-        initUI();
 
+        initFB();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthStateListener != null) {
+            mAuth.removeAuthStateListener(mAuthStateListener);
+        }
     }
 
     private void initFirebaseData() {
 
-        if(AccessToken.getCurrentAccessToken() != null ) {
+
             firebaseUserID = firebaseUser.getUid();
             email = firebaseUser.getEmail();
             facebookUserID = Profile.getCurrentProfile().getId();
             mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
             mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
-        }
+
 
     }
 
 
     private void intentExtras(Intent intent) {
+        initFirebaseData();
         intent.putExtra(MapsActivity.USER_ID, facebookUserID);
         intent.putExtra(MapsActivity.FIREBASE_ID, firebaseUserID);
         intent.putExtra(MapsActivity.EMAIL, email);
@@ -141,6 +161,9 @@ public class LoginActivity extends AppCompatActivity {
     private void initFB() {
         loginButton = (LoginButton)findViewById(R.id.login_button);
         textview = (TextView) findViewById(R.id.login_status);
+        List<String> permissions = new ArrayList<>();
+        permissions.add("email");
+        loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -152,12 +175,12 @@ public class LoginActivity extends AppCompatActivity {
                 handleFacebookAccessToken(loginResult.getAccessToken());
 //                progressBar.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                initFirebaseData();
+//                initFirebaseData();
                 intentExtras(intent);
-                startActivity(intent);
                 overridePendingTransition(R.anim.enter,R.anim.exit);
                 progressBar.setVisibility(View.INVISIBLE);
                 Log.d(TAG, "LOGGED IN!!!!!");
+                startActivity(intent);
                 finish();
 
 
@@ -178,7 +201,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isLoggedIn(){
 
-        if(firebaseUser == null || firebaseUser.equals(null)) {
+        if(firebaseUser == null || firebaseUser.equals(null) || firebaseUser.getEmail().equals(null)
+                ) {
             return false;
         }
         // check firebase login
@@ -239,6 +263,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         // ...
+
                     }
                 });
     }

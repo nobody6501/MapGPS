@@ -166,9 +166,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         email = intent.getStringExtra(EMAIL);
         firebaseUserID = intent.getStringExtra(FIREBASE_ID);
 
+//        Toast.makeText(MapsActivity.this,firebaseUserID,Toast.LENGTH_LONG);
+
         //tested getting info from loginactivity ok
-//        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID + "\nEmail: " + email +
-//                "\n Firebase: " + firebaseUserID, Toast.LENGTH_LONG).show();
+        Toast.makeText(MapsActivity.this, "Facebook UserID is : " + userID + "\nEmail: " + email +
+                "\n Firebase: " + firebaseUserID, Toast.LENGTH_LONG).show();
 
     }
 
