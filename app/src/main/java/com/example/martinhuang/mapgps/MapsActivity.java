@@ -589,7 +589,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void dropRetrievedMessages(String message, LatLng position) {
         mMap.addMarker(new MarkerOptions().position(position).draggable(false).title(message));
 
-        Toast.makeText(MapsActivity.this, message, Toast.LENGTH_LONG).show();
+//        Toast.makeText(MapsActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     private int dpToPx(int dp) {

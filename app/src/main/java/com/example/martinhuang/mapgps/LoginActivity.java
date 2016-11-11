@@ -111,12 +111,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initFirebaseData() {
 
-        facebookUserID = Profile.getCurrentProfile().getId();
-        firebaseUserID = firebaseUser.getUid();
-        email = firebaseUser.getEmail();
-        mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
-        mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
-
+        if(AccessToken.getCurrentAccessToken() != null ) {
+            firebaseUserID = firebaseUser.getUid();
+            email = firebaseUser.getEmail();
+            facebookUserID = Profile.getCurrentProfile().getId();
+            mDatabase.child("users").child(firebaseUserID).child("FacebookID").setValue(facebookUserID);
+            mDatabase.child("users").child(firebaseUserID).child("Email").setValue(email);
+        }
 
     }
 
@@ -146,12 +147,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 Log.d(TAG, "LOGGING IN!!!!!");
 
-                initFirebaseData();
 
                 textview.setText("Logged in !!! ");
                 handleFacebookAccessToken(loginResult.getAccessToken());
 //                progressBar.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                initFirebaseData();
                 intentExtras(intent);
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter,R.anim.exit);
@@ -176,6 +177,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isLoggedIn(){
+
+        if(firebaseUser == null || firebaseUser.equals(null)) {
+            return false;
+        }
         // check firebase login
         for (UserInfo user: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
             if (user.getProviderId().equals("facebook.com")) {
