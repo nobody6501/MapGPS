@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         if(isLoggedIn()) {
             //already logged in, go to Maps
 //            progressBar.setVisibility(View.VISIBLE);
-            initFirebaseData();
+//            initFirebaseData();
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
             intentExtras(intent);
             startActivity(intent);

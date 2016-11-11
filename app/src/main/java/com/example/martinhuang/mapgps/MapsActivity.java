@@ -109,6 +109,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     SupportMapFragment mapFragment;
     GoogleMap googleMap;
 
+    EditText editText;
+
     private static final String TAG = "MapsActivity";
 
     @Override
@@ -497,7 +499,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 drawerLayout.closeDrawers();
 
-                final EditText editText = (EditText)findViewById(R.id.et);
+                editText = (EditText)findViewById(R.id.et);
                 editText.setSingleLine();
                 int backgroundHeight = (int)editText.getTextSize()*(int)1.2;
                // editText.setHeight(backgroundHeight);
@@ -635,7 +637,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onBackPressed() {
-
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0 && editText.isFocused()) {
+            // do something on back.
+            editText.setVisibility(View.INVISIBLE);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }
